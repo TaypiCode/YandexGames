@@ -1,0 +1,58 @@
+<!-- Yandex Games SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+
+
+    
+    <script>
+	//AdsScript должен быть отдельным элементом на сцене с таким же именем
+	//меняется IdleSeller
+        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/IdleSeller.json", { onProgress: UnityProgress });
+        var sdk;
+
+
+        YaGames.init({
+            adv: {
+                onAdvClose: wasShown => {
+                    console.info('adv closed!');
+                }
+            }
+        })
+            .then(ysdk => {
+                sdk = ysdk;
+		//show ads when start game
+                sdk.adv.showFullscreenAdv({ callbacks: {} });
+            });
+        function ShowInterstitialAdFromUnity() {
+            sdk.adv.showFullscreenAdv({	//sdk function
+                callbacks: {
+                    onClose: function (wasShown) {
+                        console.log('Video Interstitial Ad closed.');
+                        window.unityInstance.SendMessage('AdsScript', 'NonRewardAdsShowed'); //call unity
+                        // some action after close
+                    },
+                    onError: function (error) {
+                        // some action on error
+                    }
+                }
+            });
+        }
+        function ShowRewardAdFromUnity(id) {
+            sdk.adv.showRewardedVideo({	//sdk function
+                callbacks: {
+                    onOpen: () => {
+                        console.log('Video Rewarded Ad open.' + id);
+                    },
+                    onRewarded: () => {
+                        console.log('Rewarded!' + id);
+                        window.unityInstance.SendMessage('AdsScript', 'Reward', id);	//call unity
+                    },
+                    onClose: () => {
+                        console.log('Video Rewarded Ad closed.');
+                    },
+                    onError: (e) => {
+                        console.log('Error while open video Rewarded Ad:', e);
+                    }
+                }
+            });
+        }
+    </script>
