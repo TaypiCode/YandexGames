@@ -5,10 +5,10 @@
     
     <script>
 	//AdsScript должен быть отдельным элементом на сцене с таким же именем
-	//меняется IdleSeller
-        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/IdleSeller.json", { onProgress: UnityProgress });
+	//меняется Maze
+        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Maze.json", { onProgress: UnityProgress });
         var sdk;
-
+        var payments = null;
 
         YaGames.init({
             adv: {
@@ -19,9 +19,29 @@
         })
             .then(ysdk => {
                 sdk = ysdk;
-		//show ads when start game
-                sdk.adv.showFullscreenAdv({ callbacks: {} });
+		        //show ads when start game
+                //sdk.adv.showFullscreenAdv({ callbacks: {} });
+
+                //init payments
+                sdk.getPayments({ signed: true }).then(_payments => {
+                    // Покупки доступны.
+                    payments = _payments;
+                    payments.getPurchases().then(purchases => {
+                        if (purchases.some(purchase => purchase.productID === 'removeAds')) {
+                          window.unityInstance.SendMessage('ShopScript', 'AlreadyBought', purchase.productID);	//call unity
+                        }
+                    }).catch(err => {
+                        // Выбрасывает исключение USER_NOT_AUTHORIZED для неавторизованных пользователей.
+                    });
+                }).catch(err => {
+                    // Покупки недоступны. Включите монетизацию в консоли разработчика.
+                    // Убедитесь, что на вкладке Покупки консоли разработчика присутствует таблица
+                    // хотя бы с одним внутриигровым товаром и надписью «Покупки разрешены».
+                });
+                
             });
+
+
         function ShowInterstitialAdFromUnity() {
             sdk.adv.showFullscreenAdv({	//sdk function
                 callbacks: {
@@ -40,19 +60,32 @@
             sdk.adv.showRewardedVideo({	//sdk function
                 callbacks: {
                     onOpen: () => {
-                        console.log('Video Rewarded Ad open.' + id);
+                        console.log('Video Rewarded Ad open. id:' + id);
                     },
                     onRewarded: () => {
-                        console.log('Rewarded!' + id);
+                        console.log('Rewarded! id:' + id);
                         window.unityInstance.SendMessage('AdsScript', 'Reward', id);	//call unity
                     },
                     onClose: () => {
-                        console.log('Video Rewarded Ad closed.');
+                        console.log('Video Rewarded Ad closed. id:' + id);
                     },
                     onError: (e) => {
                         console.log('Error while open video Rewarded Ad:', e);
                     }
                 }
+            });
+        }
+
+        
+
+        function PurchaseFromUnity(item_id){
+            payments.purchase({ id: item_id }).then(purchase => {
+                console.log('Покупка успешно совершена! id:' +  item_id);
+                window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
+            }).catch(err => {
+                // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
+                // пользователь не авторизовался, передумал и закрыл окно оплаты,
+                // истекло отведенное на покупку время, не хватило денег и т. д.
             });
         }
     </script>

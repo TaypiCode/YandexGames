@@ -6,20 +6,19 @@ using System.Runtime.InteropServices; //need to call js
 
 public class AdsScript : MonoBehaviour
 {
-    private string _moneyBuffPlacement = "moneyBuff";
-    private string _speedBuffPlacement = "speedBuff";
+    private string _rewardPlacement = "rewardedVideo";
+    private bool _canShowNoRewardAds = true;
     private float _noRewardAdsTime = 200;
     private float _timer;
 
 
     [DllImport("__Internal")]
-    private static extern void ShowRewardAd(string id); //call js from plugin AdsScriptToJS.jslib
+    private static extern void ShowRewardAd(string id); //call js from plugin UnityScriptToJS.jslib
     [DllImport("__Internal")]
-    private static extern void ShowInterstitialAd(); //call js from plugin AdsScriptToJS.jslib
-
+    private static extern void ShowInterstitialAd(); //call js from plugin UnityScriptToJS.jslib
     private void Start()
     {
-        _timer = noRewardAdsTime;
+        _timer = _noRewardAdsTime;
     }
     private void Update()
     {
@@ -33,13 +32,16 @@ public class AdsScript : MonoBehaviour
             _timer -= Time.deltaTime;
         }
     }
-    private void ShowAd(string placement)
+    public void ShowAd(string placement)
     {
         ShowRewardAd(placement);
     }
-    private void ShowNonRewardAd()
+    public void ShowNonRewardAd()
     {
-        ShowInterstitialAd();
+        if (_canShowNoRewardAds)
+        {
+            ShowInterstitialAd();
+        }
     }
     public void NonRewardAdsShowed()
     {
@@ -47,13 +49,14 @@ public class AdsScript : MonoBehaviour
     }
     public void Reward(string placement)
     {
-        if (placement == _moneyBuffPlacement)
+        if (placement == _rewardPlacement)
         {
-            
+            //reward
         }
-        else if (placement == _speedBuffPlacement)
-        {
-            
-        }
+    }
+
+    public void SetCanShowNoRewardAds(bool val)
+    {
+        _canShowNoRewardAds = val;
     }
 }
