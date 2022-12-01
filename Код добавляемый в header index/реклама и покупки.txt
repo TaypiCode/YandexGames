@@ -20,7 +20,7 @@
             .then(ysdk => {
                 sdk = ysdk;
 		        //show ads when start game
-                //sdk.adv.showFullscreenAdv({ callbacks: {} });
+                sdk.adv.showFullscreenAdv({ callbacks: {} });
 
                 //init payments
                 sdk.getPayments({ signed: true }).then(_payments => {

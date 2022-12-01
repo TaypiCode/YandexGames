@@ -1,0 +1,53 @@
+<!-- Yandex Games SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+
+
+    
+    <script>
+	//AdsScript должен быть отдельным элементом на сцене с таким же именем
+	//меняется Maze
+        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Maze.json", { onProgress: UnityProgress });
+        var sdk;
+
+        YaGames.init({
+            adv: {
+                onAdvClose: wasShown => {
+                    console.info('adv closed!');
+                }
+            }
+        })
+            .then(ysdk => {
+                sdk = ysdk;
+		        //show ads when start game
+                sdk.adv.showFullscreenAdv({ callbacks: {} });
+            });
+
+
+        function ShowInterstitialAdFromUnity() {
+            sdk.adv.showFullscreenAdv({	//sdk function
+                callbacks: {
+                    onClose: function (wasShown) {
+                        console.log('Video Interstitial Ad closed.');
+                        window.unityInstance.SendMessage('AdsScript', 'NonRewardAdsShowed'); //call unity
+                        // some action after close
+                    },
+                    onError: function (error) {
+                        // some action on error
+                    }
+                }
+            });
+        }
+
+        
+
+        function PurchaseFromUnity(item_id){
+            payments.purchase({ id: item_id }).then(purchase => {
+                console.log('Покупка успешно совершена! id:' +  item_id);
+                window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
+            }).catch(err => {
+                // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
+                // пользователь не авторизовался, передумал и закрыл окно оплаты,
+                // истекло отведенное на покупку время, не хватило денег и т. д.
+            });
+        }
+    </script>
