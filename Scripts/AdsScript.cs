@@ -62,6 +62,7 @@ public class AdsScript : MonoBehaviour
     private void SetTimeScale(float val)
     {
         Time.timeScale = val;
+        AudioListener.volume = val;
     }
     public void SetCanShowNoRewardAds(bool val)
     {
