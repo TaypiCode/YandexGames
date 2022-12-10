@@ -52,6 +52,7 @@
                     },
                     onError: function (error) {
                         // some action on error
+                        window.unityInstance.SendMessage('AdsScript', 'AdsError'); //call unity
                     }
                 }
             });
@@ -71,6 +72,7 @@
                     },
                     onError: (e) => {
                         console.log('Error while open video Rewarded Ad:', e);
+                        window.unityInstance.SendMessage('AdsScript', 'AdsError'); //call unity
                     }
                 }
             });

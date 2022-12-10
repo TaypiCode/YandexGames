@@ -35,17 +35,21 @@ public class AdsScript : MonoBehaviour
     public void ShowAd(string placement)
     {
         ShowRewardAd(placement);
+        SetTimeScale(0);
+
     }
     public void ShowNonRewardAd()
     {
         if (_canShowNoRewardAds)
         {
             ShowInterstitialAd();
+            SetTimeScale(0);
         }
     }
     public void NonRewardAdsShowed()
     {
         _timer = _noRewardAdsTime;
+        SetTimeScale(1);
     }
     public void Reward(string placement)
     {
@@ -53,8 +57,16 @@ public class AdsScript : MonoBehaviour
         {
             //reward
         }
+        SetTimeScale(1);
     }
-
+    public void AdsError()
+    {
+        SetTimeScale(1);
+    }
+    private void SetTimeScale(float val)
+    {
+        Time.timeScale = val;
+    }
     public void SetCanShowNoRewardAds(bool val)
     {
         _canShowNoRewardAds = val;

@@ -33,6 +33,7 @@
                     },
                     onError: function (error) {
                         // some action on error
+                        window.unityInstance.SendMessage('AdsScript', 'AdsError'); //call unity
                     }
                 }
             });
@@ -40,14 +41,24 @@
 
         
 
-        function PurchaseFromUnity(item_id){
-            payments.purchase({ id: item_id }).then(purchase => {
-                console.log('Покупка успешно совершена! id:' +  item_id);
-                window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
-            }).catch(err => {
-                // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
-                // пользователь не авторизовался, передумал и закрыл окно оплаты,
-                // истекло отведенное на покупку время, не хватило денег и т. д.
+         function ShowRewardAdFromUnity(id) {
+            sdk.adv.showRewardedVideo({	//sdk function
+                callbacks: {
+                    onOpen: () => {
+                        console.log('Video Rewarded Ad open. id:' + id);
+                    },
+                    onRewarded: () => {
+                        console.log('Rewarded! id:' + id);
+                        window.unityInstance.SendMessage('AdsScript', 'Reward', id);	//call unity
+                    },
+                    onClose: () => {
+                        console.log('Video Rewarded Ad closed. id:' + id);
+                    },
+                    onError: (e) => {
+                        console.log('Error while open video Rewarded Ad:', e);
+                        window.unityInstance.SendMessage('AdsScript', 'AdsError'); //call unity
+                    }
+                }
             });
         }
     </script>
