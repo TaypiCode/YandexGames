@@ -22,13 +22,9 @@ public class AdsScript : MonoBehaviour
     }
     private void Update()
     {
-        if (_timer < 0)
+        if (_timer >= 0)
         {
 
-            ShowNonRewardAd();
-        }
-        else
-        {
             _timer -= Time.deltaTime;
         }
     }
@@ -40,7 +36,7 @@ public class AdsScript : MonoBehaviour
     }
     public void ShowNonRewardAd()
     {
-        if (_canShowNoRewardAds)
+        if (_canShowNoRewardAds && _timer < 0)
         {
             ShowInterstitialAd();
             SetTimeScale(0);
