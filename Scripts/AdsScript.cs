@@ -6,10 +6,14 @@ using System.Runtime.InteropServices; //need to call js
 
 public class AdsScript : MonoBehaviour
 {
-    private string _rewardPlacement = "rewardedVideo";
     private bool _canShowNoRewardAds = true;
     private float _noRewardAdsTime = 200;
     private float _timer;
+
+    public enum Placements 
+    {
+        Rewarded
+    }
 
 
     [DllImport("__Internal")]
@@ -28,9 +32,9 @@ public class AdsScript : MonoBehaviour
             _timer -= Time.deltaTime;
         }
     }
-    public void ShowAd(string placement)
+    public void ShowAd(Placements placement)
     {
-        ShowRewardAd(placement);
+        ShowRewardAd(placement.ToString());
         SetTimeScale(0);
 
     }
@@ -49,7 +53,7 @@ public class AdsScript : MonoBehaviour
     }
     public void Reward(string placement)
     {
-        if (placement == _rewardPlacement)
+        if (placement == Placements.Rewarded.ToString())
         {
             //reward
         }
