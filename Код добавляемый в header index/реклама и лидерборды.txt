@@ -61,4 +61,14 @@
                 }
             });
         }
+
+
+	//leaderboard
+	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
+		sdk.getLeaderboards()
+  			.then(lb => {
+    			// Без extraData
+    			lb.setLeaderboardScore(leaderboadrName, leaderboardValue);
+  		});
+	}
     </script>

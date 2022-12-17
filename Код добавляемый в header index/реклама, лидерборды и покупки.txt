@@ -77,7 +77,16 @@
                 }
             });
         }
-
+	
+	
+	//leaderboard
+	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
+		sdk.getLeaderboards()
+  			.then(lb => {
+    			// Без extraData
+    			lb.setLeaderboardScore((leaderboadrName, leaderboardValue));
+  		});
+	}
         
 
         function PurchaseFromUnity(item_id){
@@ -90,4 +99,7 @@
                 // истекло отведенное на покупку время, не хватило денег и т. д.
             });
         }
+
+
+	
     </script>
