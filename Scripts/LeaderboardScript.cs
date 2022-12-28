@@ -7,12 +7,12 @@ public class LeaderboardScript : MonoBehaviour
 {
     public enum Names
     {
-        Rating
+        MaxLevel
     };
     [DllImport("__Internal")]
     private static extern void SetLeaderboardData(string leaderboadName, float leaderboardValue); //call js from plugin UnityScriptToJS.jslib
 
-    public void SetLeaderboardValue(Names leaderboardName, float val)
+    public static void SetLeaderboardValue(Names leaderboardName, float val)
     {
         SetLeaderboardData(leaderboardName.ToString(), val);
     }
