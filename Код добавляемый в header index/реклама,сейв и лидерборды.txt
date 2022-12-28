@@ -1,4 +1,4 @@
-<!-- Yandex Games SDK -->
+﻿<!-- Yandex Games SDK -->
     <script src="https://yandex.ru/games/sdk/v2"></script>
 
 
@@ -8,7 +8,6 @@
 	//меняется Maze
         var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Maze.json", { onProgress: UnityProgress });
         var sdk;
-        var payments = null;
 
         YaGames.init({
             adv: {
@@ -21,24 +20,6 @@
                 sdk = ysdk;
 		        //show ads when start game
                 sdk.adv.showFullscreenAdv({ callbacks: {} });
-
-                //init payments
-                sdk.getPayments({ signed: true }).then(_payments => {
-                    // Покупки доступны.
-                    payments = _payments;
-                    payments.getPurchases().then(purchases => {
-                        if (purchases.some(purchase => purchase.productID === 'removeAds')) {
-                          window.unityInstance.SendMessage('ShopScript', 'AlreadyBought', purchase.productID);	//call unity
-                        }
-                    }).catch(err => {
-                        // Выбрасывает исключение USER_NOT_AUTHORIZED для неавторизованных пользователей.
-                    });
-                }).catch(err => {
-                    // Покупки недоступны. Включите монетизацию в консоли разработчика.
-                    // Убедитесь, что на вкладке Покупки консоли разработчика присутствует таблица
-                    // хотя бы с одним внутриигровым товаром и надписью «Покупки разрешены».
-                });
-                
             });
 
 
@@ -57,7 +38,10 @@
                 }
             });
         }
-        function ShowRewardAdFromUnity(id) {
+
+        
+
+         function ShowRewardAdFromUnity(id) {
             sdk.adv.showRewardedVideo({	//sdk function
                 callbacks: {
                     onOpen: () => {
@@ -78,28 +62,18 @@
             });
         }
 	
-	
+	//save
+
+	window.onbeforeunload = function(e) {
+     		window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+ 	};
+
 	//leaderboard
 	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
 		sdk.getLeaderboards()
   			.then(lb => {
     			// Без extraData
-    			lb.setLeaderboardScore((leaderboadrName, leaderboardValue));
+    			lb.setLeaderboardScore(leaderboadrName, leaderboardValue);
   		});
 	}
-        
-
-        function PurchaseFromUnity(item_id){
-            payments.purchase({ id: item_id }).then(purchase => {
-                console.log('Покупка успешно совершена! id:' +  item_id);
-                window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
-            }).catch(err => {
-                // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
-                // пользователь не авторизовался, передумал и закрыл окно оплаты,
-                // истекло отведенное на покупку время, не хватило денег и т. д.
-            });
-        }
-
-
-	
     </script>
