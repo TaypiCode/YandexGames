@@ -35,7 +35,6 @@ public class AdsScript : MonoBehaviour
     public void ShowAd(Placements placement)
     {
         ShowRewardAd(placement.ToString());
-        SetTimeScale(0);
 
     }
     public void ShowNonRewardAd()
@@ -43,23 +42,29 @@ public class AdsScript : MonoBehaviour
         if (_canShowNoRewardAds && _timer < 0)
         {
             ShowInterstitialAd();
-            SetTimeScale(0);
         }
     }
-    public void NonRewardAdsShowed()
+    public void OnNonRewardAdsShowed()
     {
         _timer = _noRewardAdsTime;
-        SetTimeScale(1);
     }
-    public void Reward(string placement)
+    public void OnAdsReward(string placement)
     {
         if (placement == Placements.Rewarded.ToString())
         {
             //reward
         }
+    }
+    public void OnAdsError()
+    {
         SetTimeScale(1);
     }
-    public void AdsError()
+    public void OnAdsOpen()
+    {
+
+        SetTimeScale(0);
+    }
+    public void OnAdsClose()
     {
         SetTimeScale(1);
     }

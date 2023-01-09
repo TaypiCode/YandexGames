@@ -26,41 +26,46 @@
         function ShowInterstitialAdFromUnity() {
             sdk.adv.showFullscreenAdv({	//sdk function
                 callbacks: {
+		    onOpen: () => {
+                        console.log('Video Ad open. id:' + id);
+			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
+                    },
                     onClose: function (wasShown) {
                         console.log('Video Interstitial Ad closed.');
-                        window.unityInstance.SendMessage('AdsScript', 'NonRewardAdsShowed'); //call unity
+                        window.unityInstance.SendMessage('AdsScript', 'OnNonRewardAdsShowed'); //call unity
+			window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
                         // some action after close
                     },
                     onError: function (error) {
                         // some action on error
-                        window.unityInstance.SendMessage('AdsScript', 'AdsError'); //call unity
+                        window.unityInstance.SendMessage('AdsScript', 'OnAdsError'); //call unity
                     }
                 }
             });
         }
-
-        
-
-         function ShowRewardAdFromUnity(id) {
+        function ShowRewardAdFromUnity(id) {
             sdk.adv.showRewardedVideo({	//sdk function
                 callbacks: {
                     onOpen: () => {
                         console.log('Video Rewarded Ad open. id:' + id);
+			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
                     },
                     onRewarded: () => {
                         console.log('Rewarded! id:' + id);
-                        window.unityInstance.SendMessage('AdsScript', 'Reward', id);	//call unity
+                        window.unityInstance.SendMessage('AdsScript', 'OnAdsReward', id);	//call unity
                     },
                     onClose: () => {
                         console.log('Video Rewarded Ad closed. id:' + id);
+			window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
                     },
                     onError: (e) => {
                         console.log('Error while open video Rewarded Ad:', e);
-                        window.unityInstance.SendMessage('AdsScript', 'AdsError'); //call unity
+                        window.unityInstance.SendMessage('AdsScript', 'OnAdsError'); //call unity
                     }
                 }
             });
         }
+
 	
 	//save
 
