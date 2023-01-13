@@ -7,7 +7,7 @@ using System.Runtime.InteropServices; //need to call js
 public class AdsScript : MonoBehaviour
 {
     private bool _canShowNoRewardAds = true;
-    private float _noRewardAdsTime = 200;
+    private float _noRewardAdsTime = 300;
     private float _timer;
 
     public enum Placements 
@@ -32,7 +32,7 @@ public class AdsScript : MonoBehaviour
             _timer -= Time.deltaTime;
         }
     }
-    public void ShowAd(Placements placement)
+    private void ShowAd(Placements placement)
     {
         ShowRewardAd(placement.ToString());
 

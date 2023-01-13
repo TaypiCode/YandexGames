@@ -5,8 +5,8 @@
     
     <script>
 	//AdsScript должен быть отдельным элементом на сцене с таким же именем
-	//меняется Maze
-        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Maze.json", { onProgress: UnityProgress });
+	//меняется Game
+        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Game.json", { onProgress: UnityProgress });
         var sdk;
 
         YaGames.init({
@@ -18,7 +18,7 @@
         })
             .then(ysdk => {
                 sdk = ysdk;
-		        //show ads when start game
+                //show ads when start game
                 sdk.adv.showFullscreenAdv({ callbacks: {} });
             });
 
@@ -66,19 +66,18 @@
             });
         }
 
-	
-	//save
+        //save
 
-	window.onbeforeunload = function(e) {
-     		window.unityInstance.SendMessage("OnCloseScript", "OnClose");
- 	};
+        window.onbeforeunload = function (e) {
+            window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+        };
 
-	//leaderboard
-	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
-		sdk.getLeaderboards()
-  			.then(lb => {
-    			// Без extraData
-    			lb.setLeaderboardScore(leaderboadrName, leaderboardValue);
-  		});
-	}
+        //leaderboard
+        function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue) {
+            sdk.getLeaderboards()
+                .then(lb => {
+                    // Без extraData
+                    lb.setLeaderboardScore(leaderboadrName, leaderboardValue);
+                });
+        }
     </script>

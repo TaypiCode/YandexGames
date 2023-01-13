@@ -5,8 +5,8 @@
     
     <script>
 	//AdsScript должен быть отдельным элементом на сцене с таким же именем
-	//меняется Maze
-        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Maze.json", { onProgress: UnityProgress });
+	//меняется Game
+        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Game.json", { onProgress: UnityProgress });
         var sdk;
         var payments = null;
 
@@ -85,24 +85,20 @@
             });
         }
 
+        //save
 
-	//save
+        window.onbeforeunload = function (e) {
+            window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+        };
 
-	window.onbeforeunload = function(e) {
-     		window.unityInstance.SendMessage("OnCloseScript", "OnClose");
- 	};
-
-	
-	//leaderboard
-	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
-		sdk.getLeaderboards()
-  			.then(lb => {
-    			// Без extraData
-    			lb.setLeaderboardScore((leaderboadrName, leaderboardValue));
-  		});
-	}
-        
-
+        //leaderboard
+        function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue) {
+            sdk.getLeaderboards()
+                .then(lb => {
+                    // Без extraData
+                    lb.setLeaderboardScore(leaderboadrName, leaderboardValue);
+                });
+        }
         function PurchaseFromUnity(item_id){
             payments.purchase({ id: item_id }).then(purchase => {
                 console.log('Покупка успешно совершена! id:' +  item_id);
