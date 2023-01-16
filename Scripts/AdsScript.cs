@@ -7,10 +7,11 @@ using System.Runtime.InteropServices; //need to call js
 public class AdsScript : MonoBehaviour
 {
     private bool _canShowNoRewardAds = true;
-    private float _noRewardAdsTime = 300;
-    private float _timer;
+    private static float _noRewardAdsDelay = 320;
+    private static float _noRewardAdsTimer;
+    private static bool _timerStarted;
 
-    public enum Placements 
+    public enum Placements
     {
         Rewarded
     }
@@ -22,31 +23,30 @@ public class AdsScript : MonoBehaviour
     private static extern void ShowInterstitialAd(); //call js from plugin UnityScriptToJS.jslib
     private void Start()
     {
-        _timer = _noRewardAdsTime;
+        if (_timerStarted == false)
+        {
+            _timerStarted = true;
+            _noRewardAdsTimer = _noRewardAdsDelay;
+        }
     }
     private void Update()
     {
-        if (_timer >= 0)
-        {
-
-            _timer -= Time.deltaTime;
-        }
+        _noRewardAdsTimer -= Time.deltaTime;
     }
     private void ShowAd(Placements placement)
     {
         ShowRewardAd(placement.ToString());
-
     }
     public void ShowNonRewardAd()
     {
-        if (_canShowNoRewardAds && _timer < 0)
+        if (_canShowNoRewardAds && _noRewardAdsTimer < 0)
         {
             ShowInterstitialAd();
         }
     }
     public void OnNonRewardAdsShowed()
     {
-        _timer = _noRewardAdsTime;
+        _noRewardAdsTimer = _noRewardAdsDelay;
     }
     public void OnAdsReward(string placement)
     {
