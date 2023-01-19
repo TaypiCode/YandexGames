@@ -7,7 +7,7 @@ using System.Runtime.InteropServices; //need to call js
 public class AdsScript : MonoBehaviour
 {
     private bool _canShowNoRewardAds = true;
-    private static float _noRewardAdsDelay = 320;
+    private static float _noRewardAdsDelay = 185; //min 180(3 min) in yandex
     private static float _noRewardAdsTimer;
     private static bool _timerStarted;
 
