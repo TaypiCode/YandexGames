@@ -22,4 +22,7 @@ mergeInto(LibraryManager.library, {
     // Pass message to the page
     PurchaseFromUnity(convertedText); //call js func
    }
+   RateUs: function() {
+	ShowRateUs(); //js function
+   }
 });
