@@ -1,12 +1,19 @@
-﻿<!-- Yandex Games SDK -->
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>%UNITY_WEB_NAME%</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.javascript"></script>
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+      
+<!-- Yandex Games SDK -->
     <script src="https://yandex.ru/games/sdk/v2"></script>
-
-
     
     <script>
-	//AdsScript должен быть отдельным элементом на сцене с таким же именем
-	//меняется Game
-        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "Build/Game.json", { onProgress: UnityProgress });
+         var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "%UNITY_WEBGL_BUILD_URL%", { onProgress: UnityProgress });
         var sdk;
         var payments = null;
 
@@ -85,20 +92,33 @@
             });
         }
 
-        //save
 
-        window.onbeforeunload = function (e) {
-            window.unityInstance.SendMessage("OnCloseScript", "OnClose");
-        };
+	//save
 
-        //leaderboard
-        function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue) {
-            sdk.getLeaderboards()
-                .then(lb => {
-                    // Без extraData
-                    lb.setLeaderboardScore(leaderboadrName, leaderboardValue);
-                });
-        }
+	window.onbeforeunload = function(e) {
+     		window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+ 	};
+
+	
+	//leaderboard
+	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
+		sdk.getLeaderboards()
+  			.then(lb => {
+    			// Без extraData
+    			lb.setLeaderboardScore((leaderboadrName, leaderboardValue));
+  		});
+	}
+        
+	function ShowRateUs()
+	{
+		ysdk.feedback.canReview()
+        		.then(({ value, reason }) => {
+            			if (value) {
+                			ysdk.feedback.requestReview();
+            			}
+       			 });
+	}
+
         function PurchaseFromUnity(item_id){
             payments.purchase({ id: item_id }).then(purchase => {
                 console.log('Покупка успешно совершена! id:' +  item_id);
@@ -113,3 +133,29 @@
 
 	
     </script>
+</head>
+<body>
+<div class="webgl-content">
+    <div id="unityContainer"></div>
+</div>
+<script> 
+ 	window.onload = (event) => {
+   		document.body.style.overflow = "hidden";
+
+		var ua = navigator.userAgent.toLowerCase();
+		var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+		if(isAndroid) 
+		{
+			var btns = document.getElementsByTagName("button"); //hide notification android not suppord for webgl
+			if(btns.length > 0)
+			{
+				btns[0].click();
+			}
+		}
+ 	};
+	window.onresize = (event) => {
+   		document.body.style.overflow = "hidden";
+ 	};
+</script>
+</body>
+</html>
