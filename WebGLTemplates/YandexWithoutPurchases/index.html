@@ -92,10 +92,10 @@
 
 	function ShowRateUs()
 	{
-		ysdk.feedback.canReview()
+		sdk.feedback.canReview()
         		.then(({ value, reason }) => {
             			if (value) {
-                			ysdk.feedback.requestReview();
+                			sdk.feedback.requestReview();
             			}
        			 });
 	}
