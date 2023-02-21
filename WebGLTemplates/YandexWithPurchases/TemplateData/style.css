@@ -1,10 +1,16 @@
 .webgl-content {
     overflow-y: hidden;
     overflow-x: hidden;
+    margin:0;
+    height:100vh;
 }
 #unityContainer {
-    width: 100vw;
-    height:100vh;
+    
+    position:absolute;
+    top:0px;
+    right:0px;
+    bottom:0px;
+    left:0px;
     background:black;
 }
 .with-player
