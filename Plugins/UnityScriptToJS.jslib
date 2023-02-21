@@ -21,7 +21,7 @@ mergeInto(LibraryManager.library, {
     var convertedText = Pointer_stringify(placement);
     // Pass message to the page
     PurchaseFromUnity(convertedText); //call js func
-   }
+   },
    RateUs: function() {
 	ShowRateUs(); //js function
    }
