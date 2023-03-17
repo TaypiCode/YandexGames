@@ -24,5 +24,14 @@ mergeInto(LibraryManager.library, {
    },
    RateUs: function() {
 	ShowRateUs(); //js function
+   },
+   SaveData: function(data)
+   {
+    var convertedText = Pointer_stringify(data);
+    SaveDataFromUnity(convertedText); //call js func
+   },
+   FirstLoadInSession: function()
+   {
+    FirstLoadInSessionFromUnity(); //call js func
    }
 });

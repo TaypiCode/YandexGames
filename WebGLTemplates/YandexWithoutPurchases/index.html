@@ -17,6 +17,8 @@
         //AdsScript,LeaderboardScript, OnCloseScript должен быть отдельным элементом на сцене с таким же именем
         var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "%UNITY_WEBGL_BUILD_URL%", { onProgress: UnityProgress });
         var sdk;
+        var playerSavedData;
+	var player;
 
         YaGames.init({
             adv: {
@@ -29,20 +31,72 @@
                 sdk = ysdk;
                 //show ads when start game
                 sdk.adv.showFullscreenAdv({ callbacks: {} });
+                sdk.getPlayer().then(_player => {
+
+                    if (_player.getMode() === 'lite') {
+                        // Игрок не авторизован.
+
+                        sdk.auth.openAuthDialog().then(() => {
+                            player = _player;
+                            // Игрок успешно авторизован
+                            SetLoadSavedDataFromYandex();
+                            initPlayer().catch(err => {
+                                // Ошибка при инициализации объекта Player.
+                                SetLoadSavedDataFromPlayerPrefs();
+                            });
+                        }).catch(() => {
+                            // Игрок не авторизован.
+                            SetLoadSavedDataFromPlayerPrefs();
+                        });
+                    }
+                    else {
+                        player = _player;
+                        SetLoadSavedDataFromYandex();
+                    }
+                }).catch(err => {
+                    // Ошибка при инициализации объекта Player.
+                    SetLoadSavedDataFromPlayerPrefs();
+                });
             });
 
 
+        function FirstLoadInSessionFromUnity()
+        {
+            if (typeof (playerSavedData) != "undefined") {
+                window.unityInstance.SendMessage('LoadGame', 'LoadFromYandex', playerSavedData); //call unity
+            }
+            else {
+                window.unityInstance.SendMessage('LoadGame', 'LoadData'); //call unity
+            }
+        }
+        function SaveDataFromUnity(data) {
+
+            const json_object = JSON.parse(data);
+            if (typeof (player) != "undefined") {
+                player.setData(json_object, true).then(() => {
+                    console.log('save data is set');
+                });
+            }
+        }
+        async function SetLoadSavedDataFromYandex() {
+            const data = await player.getData();
+            playerSavedData = JSON.stringify(data);
+            console.log("taypi get saved data from yandex");
+        }
+        function SetLoadSavedDataFromPlayerPrefs() {
+            console.log("taypi get saved data from local");
+        }
         function ShowInterstitialAdFromUnity() {
             sdk.adv.showFullscreenAdv({	//sdk function
                 callbacks: {
 		    onOpen: () => {
                         console.log('Video Ad open. id:' + id);
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
+			            window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
                     },
                     onClose: function (wasShown) {
                         console.log('Video Interstitial Ad closed.');
                         window.unityInstance.SendMessage('AdsScript', 'OnNonRewardAdsShowed'); //call unity
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
+			            window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
                         // some action after close
                     },
                     onError: function (error) {
@@ -57,7 +111,7 @@
                 callbacks: {
                     onOpen: () => {
                         console.log('Video Rewarded Ad open. id:' + id);
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
+			            window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
                     },
                     onRewarded: () => {
                         console.log('Rewarded! id:' + id);
@@ -65,7 +119,7 @@
                     },
                     onClose: () => {
                         console.log('Video Rewarded Ad closed. id:' + id);
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
+			            window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
                     },
                     onError: (e) => {
                         console.log('Error while open video Rewarded Ad:', e);
@@ -90,15 +144,15 @@
                 });
         }
 
-	function ShowRateUs()
-	{
-		sdk.feedback.canReview()
+	    function ShowRateUs()
+	    {
+		    sdk.feedback.canReview()
         		.then(({ value, reason }) => {
             			if (value) {
                 			sdk.feedback.requestReview();
             			}
        			 });
-	}
+	    }
     </script>
 </head>
 <body>
