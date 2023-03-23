@@ -35,19 +35,7 @@
 
                     if (_player.getMode() === 'lite') {
                         // Игрок не авторизован.
-
-                        sdk.auth.openAuthDialog().then(() => {
-                            player = _player;
-                            // Игрок успешно авторизован
-                            SetLoadSavedDataFromYandex();
-                            initPlayer().catch(err => {
-                                // Ошибка при инициализации объекта Player.
-                                SetLoadSavedDataFromPlayerPrefs();
-                            });
-                        }).catch(() => {
-                            // Игрок не авторизован.
-                            SetLoadSavedDataFromPlayerPrefs();
-                        });
+			SetLoadSavedDataFromPlayerPrefs();
                     }
                     else {
                         player = _player;
@@ -68,6 +56,12 @@
             else {
                 window.unityInstance.SendMessage('LoadGame', 'LoadData'); //call unity
             }
+		var ua = navigator.userAgent.toLowerCase();
+		var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+		if(isAndroid) 
+		{
+			window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
+		}
         }
         function SaveDataFromUnity(data) {
 

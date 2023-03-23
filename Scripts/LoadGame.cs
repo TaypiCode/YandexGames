@@ -8,7 +8,9 @@ public class LoadGame : MonoBehaviour
 {
     private Save _save;
     private static bool _firstLoad = true;
+    private static bool _isMobile;
 
+    public static bool IsMobile { get => _isMobile;  }
 
     [DllImport("__Internal")]
     private static extern void FirstLoadInSession(); //call js from plugin UnityScriptToJS.jslib
@@ -53,5 +55,9 @@ public class LoadGame : MonoBehaviour
             //no save
         }
         _firstLoad = false;
+    }
+    public void SetIsMobile()
+    {
+        _isMobile = true;
     }
 }
