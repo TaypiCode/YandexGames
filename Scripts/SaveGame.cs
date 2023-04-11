@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using static UnityEditor.PlayerSettings.Switch;
 
 public class SaveGame : MonoBehaviour
 {
@@ -26,11 +27,15 @@ public class SaveGame : MonoBehaviour
     {
         CreateSaveData();
         SavePlayerPrefs();
-        SaveInYandex();
+        if (TestMode.Value == false)
+        {
+            SaveInYandex();
+        }
+        
     }
     private void CreateSaveData()
     {
-        save.example = 1;
+        save.currentLanguage = Languages.CurrentLanguage.ToString();
     }
     private void SavePlayerPrefs()
     {
@@ -49,5 +54,5 @@ public class SaveGame : MonoBehaviour
 [Serializable]
 public class Save
 {
-    public int example;
+    public string currentLanguage;
 }

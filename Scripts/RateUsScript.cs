@@ -10,6 +10,9 @@ public class RateUsScript : MonoBehaviour
 
     public static void ShowRateUs()
     {
-        RateUs();
+        if (TestMode.Value == false)
+        {
+            RateUs();
+        }
     }
 }

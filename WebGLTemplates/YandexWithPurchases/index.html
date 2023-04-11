@@ -100,7 +100,7 @@
             sdk.adv.showFullscreenAdv({	//sdk function
                 callbacks: {
 		    onOpen: () => {
-                        console.log('Video Ad open. id:' + id);
+                        console.log('Video Ad open.');
 			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
                     },
                     onClose: function (wasShown) {

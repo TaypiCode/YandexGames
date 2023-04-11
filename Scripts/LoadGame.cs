@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using static UnityEditor.PlayerSettings.Switch;
 
 public class LoadGame : MonoBehaviour
 {
+    [SerializeField] private Languages _language;
     private Save _save;
     private static bool _firstLoad = true;
     private static bool _isMobile;
@@ -32,7 +34,14 @@ public class LoadGame : MonoBehaviour
     {
         if (_firstLoad)
         {
-            FirstLoadInSession();
+            if (TestMode.Value == true)
+            {
+                LoadData();
+            }
+            else
+            {
+                FirstLoadInSession();
+            }
         }
     }
     public void LoadFromYandex(string data)
@@ -47,7 +56,14 @@ public class LoadGame : MonoBehaviour
     {
         if (_save != null)
         {
-            int example = _save.example;
+            if (_save.currentLanguage != null)
+            {
+                _language.SetLanguage(_save.currentLanguage, false);
+            }
+            else
+            {
+                _language.ShowChooseLanguage();
+            }
             
         }
         else

@@ -14,6 +14,9 @@ public class LeaderboardScript : MonoBehaviour
 
     public static void SetLeaderboardValue(Names leaderboardName, float val)
     {
-        SetLeaderboardData(leaderboardName.ToString(), val);
+        if (TestMode.Value == false)
+        {
+            SetLeaderboardData(leaderboardName.ToString(), val);
+        }
     }
 }

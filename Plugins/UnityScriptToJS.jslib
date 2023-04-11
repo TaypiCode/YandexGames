@@ -18,7 +18,7 @@ mergeInto(LibraryManager.library, {
    },	
    Purchase: function(item_id){
     // Convert bytes to the text
-    var convertedText = Pointer_stringify(placement);
+    var convertedText = Pointer_stringify(item_id);
     // Pass message to the page
     PurchaseFromUnity(convertedText); //call js func
    },
