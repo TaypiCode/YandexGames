@@ -28,12 +28,4 @@ public class Timer : MonoBehaviour
     {
         return _time;
     }
-    public bool IsWorking()
-    {
-        if(_time > 0)
-        {
-            return true;
-        }
-        return false;
-    }
 }

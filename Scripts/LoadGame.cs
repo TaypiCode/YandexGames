@@ -70,6 +70,7 @@ public class LoadGame : MonoBehaviour
         {
             //no save
         }
+        FindObjectOfType<ShopScript>().SetItems();
         _firstLoad = false;
     }
     public void SetIsMobile()

@@ -6,7 +6,6 @@ using System.Runtime.InteropServices; //need to call js
 
 public class AdsScript : MonoBehaviour
 {
-    private bool _canShowNoRewardAds = true;
     private float _noRewardAdsDelay = 185; //min 180(3 min) in yandex
     private static float _noRewardAdsTimer;
     private static bool _timerStarted;
@@ -47,7 +46,7 @@ public class AdsScript : MonoBehaviour
     }
     public void ShowNonRewardAd()
     {
-        if (_canShowNoRewardAds && _noRewardAdsTimer < 0)
+        if (_noRewardAdsTimer < 0)
         {
             if (TestMode.Value == false)
             {
@@ -87,9 +86,5 @@ public class AdsScript : MonoBehaviour
     {
         Time.timeScale = val;
         AudioListener.volume = val;
-    }
-    public void SetCanShowNoRewardAds(bool val)
-    {
-        _canShowNoRewardAds = val;
     }
 }

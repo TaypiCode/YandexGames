@@ -8,16 +8,19 @@
     <link rel="stylesheet" href="TemplateData/style.css">
     <script src="TemplateData/UnityProgress.javascript"></script>
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
-      
-<!-- Yandex Games SDK -->
+
+    <!-- Yandex Games SDK -->
     <script src="https://yandex.ru/games/sdk/v2"></script>
-    
+
     <script>
-         var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "%UNITY_WEBGL_BUILD_URL%", { onProgress: UnityProgress });
+        var unityInstance = window.unityInstance = UnityLoader.instantiate("unityContainer", "%UNITY_WEBGL_BUILD_URL%", { onProgress: UnityProgress });
         var sdk;
-	var player;
-	var playerSavedData;
+        var player;
+        var playerSavedData;
         var payments = null;
+        var canShowNoRewardAds = true;
+
+        var alreadyBought = [];
 
         YaGames.init({
             adv: {
@@ -25,59 +28,96 @@
                     console.info('adv closed!');
                 }
             }
-        })
-            .then(ysdk => {
-                sdk = ysdk;
-		        //show ads when start game
-                sdk.adv.showFullscreenAdv({ callbacks: {} });
-		sdk.getPlayer().then(_player => {
-
-                    if (_player.getMode() === 'lite') {
-                        // Игрок не авторизован.
-
-                         SetLoadSavedDataFromPlayerPrefs();
-                    }
-                    else {
-                        player = _player;
-                        SetLoadSavedDataFromYandex();
-                    }
-                }).catch(err => {
-                    // Ошибка при инициализации объекта Player.
+        }).then(ysdk => {
+            sdk = ysdk;
+            //show ads when start game
+            sdk.adv.showFullscreenAdv({ callbacks: {} });
+            sdk.getPlayer().then(_player => {
+                if (_player.getMode() === 'lite') {
+                    // Игрок не авторизован.
                     SetLoadSavedDataFromPlayerPrefs();
-                });
-                //init payments
-                sdk.getPayments({ signed: true }).then(_payments => {
-                    // Покупки доступны.
-                    payments = _payments;
-                    payments.getPurchases().then(purchases => {
-                        if (purchases.some(purchase => purchase.productID === 'removeAds')) {
-                          window.unityInstance.SendMessage('ShopScript', 'AlreadyBought', purchase.productID);	//call unity
-                        }
+                }
+                else {
+                    player = _player;
+                    sdk.getPayments({ signed: true }).then(_payments => {
+                        // Покупки доступны.
+                        payments = _payments;
+                        payments.getPurchases().then(purchases => {
+                            const removeAdsId = 'removeAds';
+                            if (purchases.some(purchase => purchase.productID === removeAdsId)) {
+                                alreadyBought.push(removeAdsId);
+                                canShowNoRewardAds = false;
+                            }
+                        });
                     }).catch(err => {
                         // Выбрасывает исключение USER_NOT_AUTHORIZED для неавторизованных пользователей.
+                    }).catch(err => {
+                        // Покупки недоступны. Включите монетизацию в консоли разработчика.
+                        // Убедитесь, что на вкладке Покупки консоли разработчика присутствует таблица
+                        // хотя бы с одним внутриигровым товаром и надписью «Покупки разрешены».
                     });
-                }).catch(err => {
-                    // Покупки недоступны. Включите монетизацию в консоли разработчика.
-                    // Убедитесь, что на вкладке Покупки консоли разработчика присутствует таблица
-                    // хотя бы с одним внутриигровым товаром и надписью «Покупки разрешены».
-                });
-                
-            });
+                    SetLoadSavedDataFromYandex();
+                    //init payments
 
-	function FirstLoadInSessionFromUnity()
-        {
+                }
+            }).catch(err => {
+                // Ошибка при инициализации объекта Player.
+                SetLoadSavedDataFromPlayerPrefs();
+            });
+        });
+
+        function FirstLoadInSessionFromUnity() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+            if (isAndroid) {
+                window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
+            }
+            if (payments == null) {
+                window.unityInstance.SendMessage('ShopScript', 'SetPurchaseUnavailable'); //call unity
+            }
+            else {
+
+
+
+                payments.getCatalog().then(products => {
+                    window.unityInstance.SendMessage('ShopScript', 'SetPurchaseAvailable'); //call unity
+                    const productId = [];
+                    const productTitle = [];
+                    const productDescription = [];
+                    const productImageURI = [];
+                    const productPrice = [];
+                    const productPriceValue = [];
+                    const productPriceCurrencyCode = [];
+                    products.forEach(function (product) {
+                        productId.push(product.id);
+                        productTitle.push(product.title);
+                        productDescription.push(product.description);
+                        productImageURI.push(product.imageURI);
+                        productPrice.push(product.price);
+                        productPriceValue.push(product.priceValue);
+                        productPriceCurrencyCode.push(product.priceCurrencyCode);
+                    });
+
+
+                    const productsData = new Object();
+                    productsData.productId = productId;
+                    productsData.productTitle = productTitle;
+                    productsData.productDescription = productDescription;
+                    productsData.productImageURI = productImageURI;
+                    productsData.productPrice = productPrice;
+                    productsData.productPriceValue = productPriceValue;
+                    productsData.productPriceCurrencyCode = productPriceCurrencyCode;
+                    productsData.alreadyBought = alreadyBought;
+                    var productsDataJson = JSON.stringify(productsData);
+                    window.unityInstance.SendMessage('ShopScript', 'SetItemsJsonDataFromYandex', productsDataJson); //call unity
+                });
+            }
             if (typeof (playerSavedData) != "undefined") {
                 window.unityInstance.SendMessage('LoadGame', 'LoadFromYandex', playerSavedData); //call unity
             }
             else {
                 window.unityInstance.SendMessage('LoadGame', 'LoadData'); //call unity
             }
-		var ua = navigator.userAgent.toLowerCase();
-		var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-		if(isAndroid) 
-		{
-			window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
-		}
         }
         function SaveDataFromUnity(data) {
 
@@ -97,31 +137,33 @@
             console.log("taypi get saved data from local");
         }
         function ShowInterstitialAdFromUnity() {
-            sdk.adv.showFullscreenAdv({	//sdk function
-                callbacks: {
-		    onOpen: () => {
-                        console.log('Video Ad open.');
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
-                    },
-                    onClose: function (wasShown) {
-                        console.log('Video Interstitial Ad closed.');
-                        window.unityInstance.SendMessage('AdsScript', 'OnNonRewardAdsShowed'); //call unity
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
-                        // some action after close
-                    },
-                    onError: function (error) {
-                        // some action on error
-                        window.unityInstance.SendMessage('AdsScript', 'OnAdsError'); //call unity
+            if (canShowNoRewardAds) {
+                sdk.adv.showFullscreenAdv({	//sdk function
+                    callbacks: {
+                        onOpen: () => {
+                            console.log('Video Ad open. id:' + id);
+                            window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
+                        },
+                        onClose: function (wasShown) {
+                            console.log('Video Interstitial Ad closed.');
+                            window.unityInstance.SendMessage('AdsScript', 'OnNonRewardAdsShowed'); //call unity
+                            window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
+                            // some action after close
+                        },
+                        onError: function (error) {
+                            // some action on error
+                            window.unityInstance.SendMessage('AdsScript', 'OnAdsError'); //call unity
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         function ShowRewardAdFromUnity(id) {
             sdk.adv.showRewardedVideo({	//sdk function
                 callbacks: {
                     onOpen: () => {
                         console.log('Video Rewarded Ad open. id:' + id);
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
+                        window.unityInstance.SendMessage('AdsScript', 'OnAdsOpen'); //call unity
                     },
                     onRewarded: () => {
                         console.log('Rewarded! id:' + id);
@@ -129,7 +171,7 @@
                     },
                     onClose: () => {
                         console.log('Video Rewarded Ad closed. id:' + id);
-			window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
+                        window.unityInstance.SendMessage('AdsScript', 'OnAdsClose'); //call unity
                     },
                     onError: (e) => {
                         console.log('Error while open video Rewarded Ad:', e);
@@ -140,69 +182,74 @@
         }
 
 
-	//save
+        //save
 
-	window.onbeforeunload = function(e) {
-     		window.unityInstance.SendMessage("OnCloseScript", "OnClose");
- 	};
+        window.onbeforeunload = function (e) {
+            window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+        };
 
-	
-	//leaderboard
-	function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue){
-		sdk.getLeaderboards()
-  			.then(lb => {
-    			// Без extraData
-    			lb.setLeaderboardScore((leaderboadrName, leaderboardValue));
-  		});
-	}
-        
-	function ShowRateUs()
-	{
-		sdk.feedback.canReview()
-        		.then(({ value, reason }) => {
-            			if (value) {
-                			sdk.feedback.requestReview();
-            			}
-       			 });
-	}
 
-        function PurchaseFromUnity(item_id){
-            payments.purchase({ id: item_id }).then(purchase => {
-                console.log('Покупка успешно совершена! id:' +  item_id);
-                window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
-            }).catch(err => {
-                // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
-                // пользователь не авторизовался, передумал и закрыл окно оплаты,
-                // истекло отведенное на покупку время, не хватило денег и т. д.
-            });
+        //leaderboard
+        function SetLeaderboardDataFromUnity(leaderboadrName, leaderboardValue) {
+            sdk.getLeaderboards()
+                .then(lb => {
+                    // Без extraData
+                    lb.setLeaderboardScore((leaderboadrName, leaderboardValue));
+                });
+        }
+
+        function ShowRateUs() {
+            sdk.feedback.canReview()
+                .then(({ value, reason }) => {
+                    if (value) {
+                        sdk.feedback.requestReview();
+                    }
+                });
+        }
+
+        function PurchaseFromUnity(item_id) {
+            if (payments == null) {
+
+            }
+            else {
+                payments.purchase({ id: item_id }).then(purchase => {
+                    console.log('Покупка успешно совершена! id:' + item_id);
+                    window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
+                    if (item_id === 'removeAds') {
+                        canShowNoRewardAds = false;
+                    }
+                }).catch(err => {
+                    // Покупка не удалась: в консоли разработчика не добавлен товар с таким id,
+                    // пользователь не авторизовался, передумал и закрыл окно оплаты,
+                    // истекло отведенное на покупку время, не хватило денег и т. д.
+                });
+            }
         }
 
 
-	
+
     </script>
 </head>
 <body>
-<div class="webgl-content">
-    <div id="unityContainer"></div>
-</div>
-<script> 
- 	window.onload = (event) => {
-   		document.body.style.overflow = "hidden";
+    <div class="webgl-content">
+        <div id="unityContainer"></div>
+    </div>
+    <script>
+        window.onload = (event) => {
+            document.body.style.overflow = "hidden";
 
-		var ua = navigator.userAgent.toLowerCase();
-		var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-		if(isAndroid) 
-		{
-			var btns = document.getElementsByTagName("button"); //hide notification android not suppord for webgl
-			if(btns.length > 0)
-			{
-				btns[0].click();
-			}
-		}
- 	};
-	window.onresize = (event) => {
-   		document.body.style.overflow = "hidden";
- 	};
-</script>
+            var ua = navigator.userAgent.toLowerCase();
+            var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+            if (isAndroid) {
+                var btns = document.getElementsByTagName("button"); //hide notification android not suppord for webgl
+                if (btns.length > 0) {
+                    btns[0].click();
+                }
+            }
+        };
+        window.onresize = (event) => {
+            document.body.style.overflow = "hidden";
+        };
+    </script>
 </body>
 </html>

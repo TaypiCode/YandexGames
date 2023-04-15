@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class ShopItemPack : ShopItem
 {
+    [SerializeField] private GameObject _itemPrefub;
+    [SerializeField] private Transform _contentItemsSpawn;
+    [SerializeField] private int[] _rewardCount;
     private void Start()
     {
         CreateItemList();
     }
     public override void Reward()
     {
-        //reward (created item list)
+        //pack reward
     }
     public void CreateItemList()
     {
-        //create item for rewards or smth (show)
+        //create pack items (optional)
     }
 }
