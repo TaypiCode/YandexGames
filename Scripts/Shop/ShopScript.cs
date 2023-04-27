@@ -84,6 +84,7 @@ public class ShopScript : MonoBehaviour
     {
         _rewardAction?.Invoke();
         _rewardAction = null;
+        FindObjectOfType<SaveGame>().SaveProgress();
     }
     public void TryBuy(YandexPurchaseItemId item, Action rewardAction)
     {

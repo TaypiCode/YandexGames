@@ -51,18 +51,19 @@
 
         function FirstLoadInSessionFromUnity()
         {
+			var ua = navigator.userAgent.toLowerCase();
+		    var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+		    if(isAndroid) 
+		    {
+			    window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
+		    }
             if (typeof (playerSavedData) != "undefined") {
                 window.unityInstance.SendMessage('LoadGame', 'LoadFromYandex', playerSavedData); //call unity
             }
             else {
                 window.unityInstance.SendMessage('LoadGame', 'LoadData'); //call unity
             }
-		    var ua = navigator.userAgent.toLowerCase();
-		    var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-		    if(isAndroid) 
-		    {
-			    window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
-		    }
+		    
         }
         function SaveDataFromUnity(data) {
 
@@ -132,7 +133,7 @@
         //save
 
         window.onbeforeunload = function (e) {
-            window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+            window.unityInstance.SendMessage('OnCloseScript', 'OnClose');
         };
 
         //leaderboard

@@ -36,12 +36,14 @@ public class SaveGame : MonoBehaviour
     private void CreateSaveData()
     {
         save.currentLanguage = Languages.CurrentLanguage.ToString();
+
+        LeaderboardScript.SetLeaderboardValue(LeaderboardScript.Names.Score, PlayerData.Score);
     }
     private void SavePlayerPrefs()
     {
         SaveJson(save);
     }
-    private void SaveInYandex()
+    private void SaveInYandex() //сохраняется какое то количество времени, при закрытии игра не успеет сохраниться, поэтому нужны промежуточные сохранения(после боя, при каком то действии)
     {
         SaveData(JsonUtility.ToJson(save));
     }

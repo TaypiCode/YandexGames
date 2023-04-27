@@ -185,7 +185,8 @@
         //save
 
         window.onbeforeunload = function (e) {
-            window.unityInstance.SendMessage("OnCloseScript", "OnClose");
+            window.unityInstance.SendMessage('OnCloseScript', 'OnClose');
+
         };
 
 

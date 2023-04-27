@@ -26,7 +26,6 @@ public class Timer : MonoBehaviour
                     _action?.Invoke();
                     _action = null;
                 }
-
             }
             yield return new WaitForEndOfFrame();
         }
