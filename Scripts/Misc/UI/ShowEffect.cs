@@ -24,11 +24,11 @@ public class ShowEffect : MonoBehaviour
     }
     private IEnumerator AnimEffect()
     {
-        while(true)
+        while (true)
         {
             if (_timer.GetTime() > 0)
             {
-                float scale = 1-_timer.GetTime() * _scaleStep;
+                float scale = 1 - _timer.GetTime() * _scaleStep;
                 _object.localScale = new Vector3(scale, scale, scale);
                 yield return new WaitForEndOfFrame();
             }
@@ -50,9 +50,9 @@ public class ShowEffect : MonoBehaviour
     }
     private void CreateTimer()
     {
-        if (_timer == null) 
-        { 
-        _timer = gameObject.AddComponent<Timer>();
+        if (_timer == null)
+        {
+            _timer = gameObject.AddComponent<Timer>();
         }
     }
 }

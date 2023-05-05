@@ -8,6 +8,7 @@ using static UnityEditor.PlayerSettings.Switch;
 
 public class SaveGame : MonoBehaviour
 {
+    [SerializeField] private Promocode _promocode;
     private Save save = new Save();
 
     [DllImport("__Internal")]
@@ -36,7 +37,7 @@ public class SaveGame : MonoBehaviour
     private void CreateSaveData()
     {
         save.currentLanguage = Languages.CurrentLanguage.ToString();
-
+        save.activatedPromocodes = _promocode.GetActivatedPromocodes();
         LeaderboardScript.SetLeaderboardValue(LeaderboardScript.Names.Score, PlayerData.Score);
     }
     private void SavePlayerPrefs()
@@ -57,4 +58,5 @@ public class SaveGame : MonoBehaviour
 public class Save
 {
     public string currentLanguage;
+    public string[] activatedPromocodes;
 }

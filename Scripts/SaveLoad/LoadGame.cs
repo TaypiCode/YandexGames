@@ -64,7 +64,10 @@ public class LoadGame : MonoBehaviour
             {
                 _language.ShowChooseLanguage();
             }
-            
+            if (_save.activatedPromocodes != null)
+            {
+                FindObjectOfType<Promocode>().FillActivatedPromocodes(_save.activatedPromocodes);
+            }
         }
         else
         {
