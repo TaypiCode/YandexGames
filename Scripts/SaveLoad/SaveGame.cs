@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using static UnityEditor.PlayerSettings.Switch;
 
 public class SaveGame : MonoBehaviour
 {
