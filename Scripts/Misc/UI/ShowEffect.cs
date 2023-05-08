@@ -43,6 +43,10 @@ public class ShowEffect : MonoBehaviour
     }
     public void Show(float delay)
     {
+        if (_animCoroutine != null)
+        {
+            StopCoroutine(_animCoroutine);
+        }
         _object.localScale = Vector3.zero;
         _scaleStep = 1 / _animTime;
         CreateTimer();
