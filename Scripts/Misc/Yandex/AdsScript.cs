@@ -6,7 +6,7 @@ using System.Runtime.InteropServices; //need to call js
 
 public class AdsScript : MonoBehaviour
 {
-    private float _noRewardAdsDelay = 185; //min 180(3 min) in yandex
+    private float _noRewardAdsDelay = 65; //min 60(1 min) in yandex
     private static float _noRewardAdsTimer;
     private static bool _timerStarted;
 
