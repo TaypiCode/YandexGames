@@ -23,8 +23,9 @@ public class Timer : MonoBehaviour
             {
                 if (_action != null)
                 {
-                    _action?.Invoke();
+                    Action a = _action;
                     _action = null;
+                    a?.Invoke();
                 }
             }
             yield return new WaitForEndOfFrame();
