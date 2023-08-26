@@ -23,11 +23,6 @@ public class LoadGame : MonoBehaviour
             _save = new Save();
             _save = JsonUtility.FromJson<Save>(PlayerPrefs.GetString("SV"));
         }
-        if (!_firstLoad)
-        {
-            LoadData();
-        }
-
     }
     private void Start()
     {
@@ -41,6 +36,10 @@ public class LoadGame : MonoBehaviour
             {
                 FirstLoadInSession();
             }
+        }
+        else
+        {
+            LoadData();
         }
     }
     public void LoadFromYandex(string data)

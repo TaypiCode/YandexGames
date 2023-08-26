@@ -69,7 +69,8 @@
         function FirstLoadInSessionFromUnity() {
             var ua = navigator.userAgent.toLowerCase();
             var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-            if (isAndroid) {
+            var isIOS = ua.indexOf("ios") > -1; //&& ua.indexOf("mobile");
+            if (isAndroid || isIOS) {
                 window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
             }
             if (payments == null) {
@@ -241,7 +242,8 @@
 
             var ua = navigator.userAgent.toLowerCase();
             var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-            if (isAndroid) {
+            var isIOS = ua.indexOf("ios") > -1; //&& ua.indexOf("mobile");
+            if (isAndroid || isIOS) {
                 var btns = document.getElementsByTagName("button"); //hide notification android not suppord for webgl
                 if (btns.length > 0) {
                     btns[0].click();
