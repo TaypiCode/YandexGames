@@ -100,6 +100,7 @@
                 window.unityInstance.SendMessage('LoadGame', 'SetIsMobile'); //call unity
             }
             if (payments == null) {
+		
                 window.unityInstance.SendMessage('ShopScript', 'SetPurchaseUnavailable'); //call unity
             }
             else {
@@ -138,6 +139,7 @@
                     var productsDataJson = JSON.stringify(productsData);
                     window.unityInstance.SendMessage('ShopScript', 'SetItemsJsonDataFromYandex', productsDataJson); //call unity
                 });
+                payments.getPurchases().then(purchases => purchases.forEach(consumePurchase));
             }
             if (typeof (playerSavedData) != "undefined") {
                 window.unityInstance.SendMessage('LoadGame', 'LoadFromYandex', playerSavedData); //call unity
@@ -145,6 +147,10 @@
             else {
                 window.unityInstance.SendMessage('LoadGame', 'LoadData'); //call unity
             }
+        }
+        function consumePurchase(purchase) { //if buy and reload page
+            window.unityInstance.SendMessage('ShopScript', 'PurchaseFailedRewardAfterReload', purchase.productID.toString());	//call unity
+            payments.consumePurchase(purchase.purchaseToken);
         }
         function SaveDataFromUnity(data) {
 
@@ -243,6 +249,7 @@
                 payments.purchase({ id: item_id }).then(purchase => {
                     console.log('Покупка успешно совершена! id:' + item_id);
                     window.unityInstance.SendMessage('ShopScript', 'PurchaseSucces', item_id);	//call unity
+                    payments.consumePurchase(purchase.purchaseToken);
                     if (item_id === 'removeAds') {
                         canShowNoRewardAds = false;
                     }
@@ -260,7 +267,7 @@
 
             var ua = navigator.userAgent.toLowerCase();
             var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-	var isIOS = ua.indexOf("ios") > -1; //&& ua.indexOf("mobile");
+		    var isIOS = ua.indexOf("ios") > -1; //&& ua.indexOf("mobile");
             if (isAndroid || isIOS) {
                 var btns = document.getElementsByTagName("button"); //hide notification android not suppord for webgl
                 if (btns.length > 0) {

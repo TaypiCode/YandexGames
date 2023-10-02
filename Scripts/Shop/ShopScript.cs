@@ -98,6 +98,18 @@ public class ShopScript : MonoBehaviour
             PurchaseSucces(null);
         }
     }
+    public void PurchaseFailedRewardAfterReload(string itemId)
+    {
+        foreach (ShopItem item in _shopItems)
+        {
+            if (item.ItemId.ToString() == itemId)
+            {
+                item.Reward();
+                FindObjectOfType<SaveGame>().SaveProgress();
+                return;
+            }
+        }
+    }
 }
 [Serializable]
 public class ProductsData
